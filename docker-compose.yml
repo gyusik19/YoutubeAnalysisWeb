@@ -1,11 +1,21 @@
 version: '2.3'
 
-services: 
+services:
+  nginx:
+    container_name: youtube-meta_nginx
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8777:8777"
+    volumes:
+      - "static:/static"
+      - "media:/media"
   web:
     container_name: youtube-meta
     build: 
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/django/Dockerfile
     restart: always
     tty: true
     stdin_open: true
@@ -16,10 +26,28 @@ services:
       - "8080"
     volumes:
       - .:/workspace
+      - ./media:/workspace/media
+      - ./static:/workspace/static
     depends_on:
       - db
   db:
     image: postgres
+    tty: true
+    stdin_open: true
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+
+volumes:
+  static:
+    driver: local
+    driver_opts:
+      type: none
+      device: "/home/mmlab/Projects/youtube-meta/static"
+      o: bind
+  media:
+    driver: local
+    driver_opts:
+      type: none
+      device: "/home/mmlab/Projects/youtube-meta/media"
+      o: bind
