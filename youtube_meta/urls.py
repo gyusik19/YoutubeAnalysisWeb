@@ -20,5 +20,6 @@ from analysis import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', views.home),
+    path('get-json/', views.get_video_data),
 
 ]
